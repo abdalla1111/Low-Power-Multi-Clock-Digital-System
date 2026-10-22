@@ -1,0 +1,14 @@
+# Extracted from dft.log: dft_drc -verbose -coverage_estimate
+Uncollapsed Stuck Fault Summary Report
+ -----------------------------------------------
+ fault class                     code   #faults
+ ------------------------------  ----  ---------
+ Detected                         DT      18013
+ Possibly detected                PT          1
+ Undetectable                     UD        302
+ ATPG untestable                  AU        100
+ Not detected                     ND         12
+ -----------------------------------------------
+ total faults                             18428
+ test coverage                            99.38%
+ ---------

@@ -1,0 +1,7 @@
+# Preserve source and archived evidence bytes across platforms.
+* -text
+*.sh text eol=lf
+*.gds binary
+*.pdf binary
+*.png binary
+*.jpg binary

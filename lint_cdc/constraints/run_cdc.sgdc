@@ -1,0 +1,305 @@
+#===========================================================
+# system_top_p32.sgdc
+#
+# SpyGlass CDC Constraints
+# Configuration:
+#   UART Prescale = 32
+#
+# Clocks:
+#   REF_CLK  = 100 MHz
+#   UART_CLK = 3.6864 MHz
+#
+# p32 behavior:
+#   rx_clk  = UART_CLK       (divider bypass, ratio = 1)
+#   tx_clk  = UART_CLK / 32
+#   alu_clk = gated REF_CLK
+#
+# IMPORTANT:
+# UART_Config[7:2] and div_ratio are case-analysed only for
+# this configuration.
+#===========================================================
+
+
+#===========================================================
+# DESIGN
+#===========================================================
+
+current_design system_top
+
+
+#===========================================================
+# MASTER CLOCKS
+#===========================================================
+
+#-----------------------------------------------------------
+# REF_CLK
+#
+# Frequency = 100 MHz
+# Period    = 10 ns
+# Duty      = 50%
+#-----------------------------------------------------------
+
+clock -name REF_CLK \
+      -domain REF_DOM \
+      -period 10 \
+      -edge {0 5}
+
+
+#-----------------------------------------------------------
+# UART_CLK
+#
+# Frequency = 3.6864 MHz
+#
+# T = 1 / 3.6864 MHz
+#   = 271.267 ns approximately
+#
+# Duty = 50%
+#-----------------------------------------------------------
+
+clock -name UART_CLK \
+      -domain UART_DOM \
+      -period 271.267 \
+      -edge {0 135.6335}
+
+
+#===========================================================
+# RESET
+#===========================================================
+
+# Active-low asynchronous reset
+reset -name RST \
+      -value 0 \
+      -async
+
+
+#===========================================================
+# GENERATED / DERIVED CLOCKS
+#===========================================================
+
+#-----------------------------------------------------------
+# RX CLOCK -- IMPORTANT
+#
+# For UART prescale = 32:
+#
+#   UART_Config[7:2] = 6'b100000
+#
+# CLKDIV_MUX chooses RX divider ratio = 1.
+#
+# Therefore:
+#
+#       rx_clk = UART_CLK
+#
+# In this configuration rx_clk is effectively the UART_CLK
+# path itself / bypass path.
+#
+# DO NOT create rx_clk as an independent clock domain.
+# DO NOT define another root clock named rx_clk.
+#
+# CDC paths operating on RX clock are associated with
+# UART_CLK in this p32 SGDC.
+#-----------------------------------------------------------
+
+
+#-----------------------------------------------------------
+# TX CLOCK
+#
+# div_ratio = 32
+#
+#       tx_clk = UART_CLK / 32
+#
+# UART_CLK = 3.6864 MHz
+#
+# tx_clk = 115.2 kHz
+#
+# Period:
+#
+# 271.267 ns * 32
+# ≈ 8680.544 ns
+#
+# Keep this as a generated clock because the TX divider
+# really creates a slower clock from UART_CLK.
+#
+# NOTE:
+# If your SpyGlass version requires the actual divider
+# output hierarchical net instead of "tx_clk", replace
+# -name tx_clk with that real clock net.
+#-----------------------------------------------------------
+
+generated_clock -name tx_clk \
+                -source UART_CLK \
+                -master_clock UART_CLK \
+                -divide_by 32
+
+#-----------------------------------------------------------
+# ALU CLOCK
+#
+# alu_clk is produced by clock gating from REF_CLK.
+#
+# Clock gating changes whether pulses are allowed through,
+# but does NOT change the base clock frequency.
+#
+# Therefore:
+#
+#       alu_clk = REF_CLK / 1
+#
+# Frequency when enabled = 100 MHz
+# Period                 = 10 ns
+#
+# NOTE:
+# If SpyGlass automatically propagates through your ICG,
+# this generated_clock may not be needed.
+# Keep it only if clock propagation is not correctly
+# identifying alu_clk from REF_CLK.
+#-----------------------------------------------------------
+
+generated_clock -name alu_clk \
+                -source REF_CLK \
+                -divide_by 1
+
+
+#===========================================================
+# INPUT / OUTPUT PORT CONSTRAINTS
+#===========================================================
+
+#-----------------------------------------------------------
+# UART RX input
+#
+# RX_IN is an asynchronous serial input coming from an
+# external UART transmitter.
+#
+# It is NOT synchronous to the internal rx_clk.
+#
+# Therefore do NOT write:
+#
+# abstract_port -ports RX_IN -clock rx_clk
+#
+# unless you intentionally want to model an external
+# synchronous relationship, which is not true for UART.
+#-----------------------------------------------------------
+
+
+#-----------------------------------------------------------
+# UART TX output
+#
+# TX_OUT is driven from the TX clock domain.
+#-----------------------------------------------------------
+
+abstract_port -ports TX_OUT \
+              -clock tx_clk
+
+
+#-----------------------------------------------------------
+# RX error outputs
+#
+# In p32 the RX logic operates on the UART_CLK path.
+#
+# So associate these directly with UART_CLK instead of
+# creating a separate rx_clk clock object.
+#-----------------------------------------------------------
+
+output -name parity_error \
+       -clock UART_CLK
+
+output -name framing_error \
+       -clock UART_CLK
+
+
+#===========================================================
+# FIX CLOCK DIVIDER CONFIGURATION
+#===========================================================
+
+#-----------------------------------------------------------
+# clk_div_en
+#
+# According to the current system architecture this signal
+# is constant 1.
+#
+# This allows the UART clock divider path to remain enabled.
+#-----------------------------------------------------------
+
+set_case_analysis -name clk_div_en \
+                  -value 1
+
+
+#===========================================================
+# UART RX PRESCALE CONFIGURATION
+#===========================================================
+
+# UART_Config[7:2] = 6'b100000
+#
+# Prescale = 32
+#
+# This configuration causes:
+#
+#       RX divider ratio = 1
+#
+# So:
+#
+#       rx_clk = UART_CLK
+#-----------------------------------------------------------
+
+set_case_analysis -name UART_Config[7] -value 1
+set_case_analysis -name UART_Config[6] -value 0
+set_case_analysis -name UART_Config[5] -value 0
+set_case_analysis -name UART_Config[4] -value 0
+set_case_analysis -name UART_Config[3] -value 0
+set_case_analysis -name UART_Config[2] -value 0
+
+
+#===========================================================
+# UART TX DIVIDER CONFIGURATION
+#===========================================================
+
+# REG3 / div_ratio = 32
+#
+# 32 decimal = 8'b0010_0000
+#
+# Therefore:
+#
+#       tx_clk = UART_CLK / 32
+#-----------------------------------------------------------
+
+set_case_analysis -name div_ratio[7] -value 0
+set_case_analysis -name div_ratio[6] -value 0
+set_case_analysis -name div_ratio[5] -value 1
+set_case_analysis -name div_ratio[4] -value 0
+set_case_analysis -name div_ratio[3] -value 0
+set_case_analysis -name div_ratio[2] -value 0
+set_case_analysis -name div_ratio[1] -value 0
+set_case_analysis -name div_ratio[0] -value 0
+
+
+#===========================================================
+# SIGNALS INTENTIONALLY NOT CASE-ANALYSED
+#===========================================================
+
+#-----------------------------------------------------------
+# CLK_EN
+#
+# Dynamic ALU clock-gating enable.
+#
+# Do NOT case-analyse it because ALU clock gating is
+# functional / dynamic behavior.
+#-----------------------------------------------------------
+
+
+#-----------------------------------------------------------
+# UART_Config[1:0]
+#
+# UART_Config[1] = PAR_TYP
+# UART_Config[0] = PAR_EN
+#
+# These signals do not change the clock-divider topology.
+#
+# They are intentionally left dynamic.
+#
+# If REG2 is written from REF_CLK while UART is operating,
+# crossings from these bits into UART logic are REAL CDC
+# crossings unless the system guarantees that configuration
+# changes only while UART is idle.
+#-----------------------------------------------------------
+
+
+#===========================================================
+# END OF FILE
+#===========================================================

@@ -1,0 +1,217 @@
+
+                                 Formality (R)
+
+               Version L-2016.03-SP1 for linux64 - Apr 13, 2016 
+
+                    Copyright (c) 1988 - 2016 Synopsys, Inc.
+   This software and the associated documentation are proprietary to Synopsys,
+ Inc. This software may only be used in accordance with the terms and conditions
+ of a written license agreement with Synopsys, Inc. All other use, reproduction,
+            or distribution of this software is strictly prohibited.
+
+  ** Highlights of Formality (R) Version L-2016.03 **
+   - New alternate verification strategies for resolving inconclusive verifications
+   - Automation for deploying alternate strategies
+   - New command to export the mapping of reference to implementation registers
+   - New capability to combine PG and low power information from db libraries with Verilog functional models
+
+   * Please refer to the Formality Release Notes for details and additional enhancements
+
+Build: 4031317
+Hostname: IC_EDA (RHEL64)
+Current time: Fri Oct  9 11:48:18 2026
+
+Loading db file '/home/synopsys/Formality2016/libraries/syn/gtech.db'
+########################### Define Top Module ############################
+set top_module system_top
+system_top
+######################### Formality Setup File ###########################
+set synopsys_auto_setup true
+true
+set_svf "../../DFT/system_top.svf"
+Error: Invalid SVF, contents ignored (FM-339)
+0
+######################### Technology Libraries ##########################
+set SSLIB "/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db"
+/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db
+set TTLIB "/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_tt_1p2v_25c.db"
+/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_tt_1p2v_25c.db
+set FFLIB "/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db"
+/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db
+######################### Report Directory ##############################
+file mkdir reports
+######################### Reference Container ###########################
+## Read Reference technology libraries
+read_db -container r $SSLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db'
+Current container set to 'r'
+1
+read_db -container r $TTLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_tt_1p2v_25c.db'
+1
+read_db -container r $FFLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db'
+1
+## Read Reference Design Files (Post-DFT Netlist)
+read_verilog -container r -libname WORK ../../DFT/results/system_top.v
+Loading verilog file '/home/ICer/System_Backend/Backend/DFT/results/system_top.v'
+1
+## Set the top Reference Design
+set_top r:/WORK/$top_module
+Setting top design to 'r:/WORK/system_top'
+Status:  Implementing inferred operators...
+
+************ Library Checking Summary ************
+Warning:  3 unlinked power cell(s) with unread pg pins.
+        Use 'report_libraries -defects all' for more details.
+**************************************************
+
+Top design successfully set to 'r:/WORK/system_top'
+Reference design set to 'r:/WORK/system_top'
+1
+######################## Implementation Container ########################
+## Read Implementation technology libraries
+read_db -container i $SSLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ss_1p08v_125c.db'
+Current container set to 'i'
+1
+read_db -container i $TTLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_tt_1p2v_25c.db'
+1
+read_db -container i $FFLIB
+Loading db file '/home/ICer/System_Backend/Backend/std_cells/scmetro_tsmc_cl013g_rvt_ff_1p32v_m40c.db'
+1
+## Read Implementation Design Files (Post-PnR Netlist)
+read_verilog -container i -libname WORK     /home/ICer/System_Backend/Backend/Formality/post-PnR/export/system_top.v
+Loading verilog file '/home/ICer/System_Backend/Backend/Formality/post-PnR/export/system_top.v'
+1
+## Set the top Implementation Design
+set_top i:/WORK/$top_module
+Setting top design to 'i:/WORK/system_top'
+Status:  Implementing inferred operators...
+
+************ Library Checking Summary ************
+Warning:  3 unlinked power cell(s) with unread pg pins.
+        Use 'report_libraries -defects all' for more details.
+**************************************************
+
+Top design successfully set to 'i:/WORK/system_top'
+Implementation design set to 'i:/WORK/system_top'
+1
+############################### Don't Verify ##############################
+# Scan input ports are primary inputs, not compare points.
+# Scan outputs are excluded from functional comparison.
+set_dont_verify_points {r:/WORK/SYS_TOP/SO*}
+Error: Unknown name: 'r:/WORK/SYS_TOP/SO*' (FM-036)
+0
+set_dont_verify_points {i:/WORK/SYS_TOP/SO*}
+Error: Unknown name: 'i:/WORK/SYS_TOP/SO*' (FM-036)
+0
+############################### Constants #################################
+# Functional Mode: test_mode = 0, scan_enable = 0
+set_constant -type port r:/WORK/SYS_TOP/test_mode 0
+Error: Unknown name: 'r:/WORK/SYS_TOP/test_mode' (FM-036)
+0
+set_constant -type port i:/WORK/SYS_TOP/test_mode 0
+Error: Unknown name: 'i:/WORK/SYS_TOP/test_mode' (FM-036)
+0
+set_constant -type port r:/WORK/SYS_TOP/SE 0
+Error: Unknown name: 'r:/WORK/SYS_TOP/SE' (FM-036)
+0
+set_constant -type port i:/WORK/SYS_TOP/SE 0
+Error: Unknown name: 'i:/WORK/SYS_TOP/SE' (FM-036)
+0
+########################### Matching Compare Points #######################
+match
+Reference design is 'r:/WORK/system_top'
+Implementation design is 'i:/WORK/system_top'
+    Info:  Detected netlists in reference and implementation designs.
+           Starting fast netlist verification mode.
+Status:  Checking designs...
+    Warning: 12 (13) undriven nets found in reference (implementation) design; see formality.log for list (FM-399)
+Status:  Building verification models...
+Status:  Matching...
+    Info:  Matching results from fast netlist verification mode may
+           change during the verification step.
+    
+*********************************** Matching Results ***********************************    
+ 381 Compare points matched by name    
+ 0 Compare points matched by signature analysis    
+ 0 Compare points matched by topology    
+ 13 Matched primary inputs, black-box outputs    
+ 0(0) Unmatched reference(implementation) compare points    
+ 0(0) Unmatched reference(implementation) primary inputs, black-box outputs    
+****************************************************************************************
+
+1
+################################# Verify #################################
+set successful [verify]
+Reference design is 'r:/WORK/system_top'
+Implementation design is 'i:/WORK/system_top'
+    
+****************************************************************************************
+
+Status:  Verifying...
+    
+*********************************** Matching Results ***********************************    
+ 381 Compare points matched by name    
+ 0 Compare points matched by signature analysis    
+ 0 Compare points matched by topology    
+ 13 Matched primary inputs, black-box outputs    
+ 0(0) Unmatched reference(implementation) compare points    
+ 0(0) Unmatched reference(implementation) primary inputs, black-box outputs    
+****************************************************************************************
+
+***************************** Synopsys Auto Setup Summary ******************************
+
+!!! Synopsys Auto Setup Mode was enabled. !!!
+!!! Verification results are valid assuming the following setup constraints: !!!
+
+### RTL Interpretation Setup
+   set hdlin_ignore_parallel_case false
+   set hdlin_ignore_full_case false
+   set hdlin_error_on_mismatch_message false
+   set hdlin_ignore_embedded_configuration true
+
+### Undriven Signal Handling Setup
+   set verification_set_undriven_signals synthesis
+
+### Test Logic Setup
+   set verification_verify_directly_undriven_output false
+   For details see report_dont_verify_points and report_constants
+
+
+For further details on Synopsys Auto Setup Mode: Type man synopsys_auto_setup
+****************************************************************************************
+
+
+********************************* Verification Results *********************************
+Verification SUCCEEDED
+   ATTENTION: synopsys_auto_setup mode was enabled.
+              See Synopsys Auto Setup Summary for details.
+----------------------------------------------------------
+ Reference design: r:/WORK/system_top
+ Implementation design: i:/WORK/system_top
+ 381 Passing compare points
+----------------------------------------------------------------------------------------
+Matched Compare Points     BBPin    Loop   BBNet     Cut    Port     DFF     LAT   TOTAL
+----------------------------------------------------------------------------------------
+Passing (equivalent)           0       0       0       0       8     372       1     381
+Failing (not equivalent)       0       0       0       0       0       0       0       0
+****************************************************************************************
+1
+if {!$successful} {
+    diagnose
+    analyze_points -failing
+}
+############################### Reports ##################################
+report_passing_points    > "reports/passing_points.rpt"
+report_failing_points    > "reports/failing_points.rpt"
+report_aborted_points    > "reports/aborted_points.rpt"
+report_unverified_points > "reports/unverified_points.rpt"
+################################## GUI ###################################
+start_gui
+     1  source -echo -verbose pnr_fm_script.tcl
+1
+1
+fm_shell (verify)> 

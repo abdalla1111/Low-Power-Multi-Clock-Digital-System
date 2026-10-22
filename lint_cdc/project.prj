@@ -1,0 +1,45 @@
+#!SPYGLASS_PROJECT_FILE
+#!VERSION 3.0
+# Paths relative to repository root. Run: spyglass -project lint_cdc/project.prj
+read_file -type verilog rtl/ALU/ALU.v
+read_file -type verilog rtl/ASYNC_FIFO/ASYNC_FIFO_TOP.v
+read_file -type verilog rtl/ASYNC_FIFO/DF_SYNC.v
+read_file -type verilog rtl/ASYNC_FIFO/FIFO_MEMORY.v
+read_file -type verilog rtl/ASYNC_FIFO/FIFO_RD.v
+read_file -type verilog rtl/ASYNC_FIFO/FIFO_WR.v
+read_file -type verilog rtl/CLKDIV_MUX/CLKDIV_MUX.v
+read_file -type verilog rtl/Clock_Divider/clk_div.v
+read_file -type verilog rtl/Clock_Gating/CLK_GATE.v
+read_file -type verilog rtl/DATA_SYNC/data_sync.v
+read_file -type verilog rtl/PULSE_GEN/PULSE_GEN.v
+read_file -type verilog rtl/REG_FILE/Reg_file.v
+read_file -type verilog rtl/RST_SYNC/RST_SYNC.v
+read_file -type verilog rtl/System_Control/SYS_CTRL.v
+read_file -type verilog rtl/System_Top/System_Top.v
+read_file -type verilog rtl/UART_TOP/UART_RX/Data_Sampling.v
+read_file -type verilog rtl/UART_TOP/UART_RX/deserializer.v
+read_file -type verilog rtl/UART_TOP/UART_RX/edge_bit_counter.v
+read_file -type verilog rtl/UART_TOP/UART_RX/fsm.v
+read_file -type verilog rtl/UART_TOP/UART_RX/parity_check.v
+read_file -type verilog rtl/UART_TOP/UART_RX/stop_check.v
+read_file -type verilog rtl/UART_TOP/UART_RX/strt_check.v
+read_file -type verilog rtl/UART_TOP/UART_RX/uart_rx_top.v
+read_file -type verilog rtl/UART_TOP/UART_TX/FSM.v
+read_file -type verilog rtl/UART_TOP/UART_TX/Mux.v
+read_file -type verilog rtl/UART_TOP/UART_TX/Parity_clac.v
+read_file -type verilog rtl/UART_TOP/UART_TX/serializer.V
+read_file -type verilog rtl/UART_TOP/UART_TX/uart_tx_top.v
+read_file -type verilog rtl/UART_TOP/UART_TOP.v
+read_file -type sgdc lint_cdc/constraints/run_cdc.sgdc
+set_option top system_top
+set_option projectwdir build/spyglass
+set_option language_mode mixed
+set_option designread_enable_synthesis no
+set_option designread_disable_flatten no
+set_option active_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff
+current_methodology $SPYGLASS_HOME/GuideWare/latest/block/rtl_handoff
+current_goal lint/lint_rtl -alltop
+current_goal lint/lint_turbo_rtl -alltop
+current_goal cdc/cdc_setup_check -alltop
+current_goal cdc/cdc_verify_struct -alltop
+current_goal cdc/cdc_verify -alltop
