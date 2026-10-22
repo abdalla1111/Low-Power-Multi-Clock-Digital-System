@@ -27,22 +27,8 @@ These are results from the submitted runs. The logs also contain SVF guidance er
 
 ## System architecture
 
-```mermaid
-flowchart TB
-    RX["UART RX"] --> SYNC["Data synchronizer"]
-    SYNC --> CTRL["System controller"]
-    CTRL --> RF["Register file"]
-    RF --> ALU["Clock-gated ALU"]
-    RF --> CTRL
-    ALU --> CTRL
-    CTRL --> FIFO["Asynchronous FIFO"]
-    FIFO --> TX["UART TX"]
-    TX --> PULSE["Read pulse generator"]
-    PULSE --> FIFO
-    RF --> CLOCK["UART clock configuration"]
-    CLOCK --> RX
-    CLOCK --> TX
-```
+<img width="997" height="682" alt="Screenshot 2026-10-22 225414" src="https://github.com/user-attachments/assets/1cff87b6-d351-487c-9950-965bcd8d2018" />
+
 
 - **UART:** 8-bit data, configurable parity and RX prescale; the supplied tests use 115200 baud and even parity.
 - **Register file:** 16 × 8 bits. REG0/REG1 store ALU operands, REG2 configures UART, and REG3 sets the TX clock divider.
