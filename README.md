@@ -8,27 +8,9 @@ The project implements register-file access and ALU processing across multiple c
 
 **Author:** Abdalla Mohamed Abdelaziz
 
-
-## Results at a glance
-
-| Stage | Recorded result | Evidence |
-|---|---|---|
-| Functional RTL | **28/28 tests passed** on Icarus Verilog 12.0 during repository preparation | [Simulation transcript](verification/rtl/reports/iverilog.log) |
-| DFT | **99.38% estimated stuck-at test coverage**, 18,013 detected faults | [Coverage summary](dft/reports/coverage_summary.rpt) · [DFT log](dft/reports/dft.log) |
-| Post-layout power | **0.442 mW total** for the recorded simulation activity | [Time-based power report](power/reports/final-system_pw.rpt) |
-| Formality, post-PnR | **381 passing compare points, 0 failing** | [Verification log](formality/post-pnr/reports/fm.log) |
-| Formality, post-synthesis / post-DFT | **376 passing compare points** in each run | [Post-synthesis](formality/post-syn/reports/fm.log) · [Post-DFT](formality/post-dft/reports/fm.log) |
-| Post-PnR GLS | **4/4 functional scoreboard tests passed** at UART prescale 32 | [GLS transcript](verification/gls/reports/transcript.log) |
-| Post-route setup | **WNS +3.231 ns**, TNS 0, 0 violating paths | [Setup summary](pnr/reports/timing/system_top_postRoute.summary) |
-| Post-route hold | **WNS +0.048 ns**, TNS 0, 0 violating paths | [Hold summary](pnr/reports/timing/system_top_postRoute_hold.summary) |
-| Physical checks | No violations in the supplied geometry/antenna checks; connectivity check found no problems | [Geometry](pnr/reports/system_top.geom.rpt) · [Antenna](pnr/reports/system_top.antenna.rpt) · [Connectivity](pnr/reports/system_top.conn.rpt) |
-
-These are results from the submitted runs. The logs also contain SVF guidance errors, GLS timing-check messages, and post-route design-rule constraint violations; their scope and interpretation are documented in [Results and run notes](docs/RESULTS.md). They are not a claim of complete signoff.
-
 ## System architecture
 
-<img width="997" height="682" alt="Screenshot 2026-10-22 225414" src="https://github.com/user-attachments/assets/1cff87b6-d351-487c-9950-965bcd8d2018" />
-
+![System architecture](https://github.com/user-attachments/assets/1cff87b6-d351-487c-9950-965bcd8d2018)
 
 - **UART:** 8-bit data, configurable parity and RX prescale; the supplied tests use 115200 baud and even parity.
 - **Register file:** 16 × 8 bits. REG0/REG1 store ALU operands, REG2 configures UART, and REG3 sets the TX clock divider.
@@ -49,6 +31,33 @@ Values below are hexadecimal; operands and addresses occupy one byte each.
 | `DD` | `DD function` | ALU operation using stored operands; returns two bytes |
 
 ALU replies send the low byte first. For example, addition with `CC C8 64 00` produces `2C 01` (300 decimal).
+
+## Physical implementation
+
+The design was implemented using Cadence First Encounter, covering floorplanning, placement, clock tree synthesis, routing, and GDSII generation. The selected post-route reports and exported netlists, SDF, SPF, and SDC are available in [`pnr/`](pnr/).
+
+<!-- PNR_IMAGE_HERE
+Add the PnR layout screenshot here:
+1. Open README.md in GitHub's editor.
+2. Delete this entire comment block.
+3. Drag the PnR screenshot into this position; GitHub will insert its image link.
+-->
+
+## Results at a glance
+
+| Stage | Recorded result | Evidence |
+|---|---|---|
+| Functional RTL | **28/28 tests passed** on Icarus Verilog 12.0 during repository preparation | [Simulation transcript](verification/rtl/reports/iverilog.log) |
+| DFT | **99.38% estimated stuck-at test coverage**, 18,013 detected faults | [Coverage summary](dft/reports/coverage_summary.rpt) · [DFT log](dft/reports/dft.log) |
+| Post-layout power | **0.442 mW total** for the recorded simulation activity | [Time-based power report](power/reports/final-system_pw.rpt) |
+| Formality, post-PnR | **381 passing compare points, 0 failing** | [Verification log](formality/post-pnr/reports/fm.log) |
+| Formality, post-synthesis / post-DFT | **376 passing compare points** in each run | [Post-synthesis](formality/post-syn/reports/fm.log) · [Post-DFT](formality/post-dft/reports/fm.log) |
+| Post-PnR GLS | **4/4 functional scoreboard tests passed** at UART prescale 32 | [GLS transcript](verification/gls/reports/transcript.log) |
+| Post-route setup | **WNS +3.231 ns**, TNS 0, 0 violating paths | [Setup summary](pnr/reports/timing/system_top_postRoute.summary) |
+| Post-route hold | **WNS +0.048 ns**, TNS 0, 0 violating paths | [Hold summary](pnr/reports/timing/system_top_postRoute_hold.summary) |
+| Physical checks | No violations in the supplied geometry/antenna checks; connectivity check found no problems | [Geometry](pnr/reports/system_top.geom.rpt) · [Antenna](pnr/reports/system_top.antenna.rpt) · [Connectivity](pnr/reports/system_top.conn.rpt) |
+
+These are results from the submitted runs. The logs also contain SVF guidance errors, GLS timing-check messages, and post-route design-rule constraint violations; their scope and interpretation are documented in [Results and run notes](docs/RESULTS.md). They are not a claim of complete signoff.
 
 ## Repository map
 
