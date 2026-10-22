@@ -36,12 +36,7 @@ ALU replies send the low byte first. For example, addition with `CC C8 64 00` pr
 
 The design was implemented using Cadence First Encounter, covering floorplanning, placement, clock tree synthesis, routing, and GDSII generation. The selected post-route reports and exported netlists, SDF, SPF, and SDC are available in [`pnr/`](pnr/).
 
-<!-- PNR_IMAGE_HERE
-Add the PnR layout screenshot here:
-1. Open README.md in GitHub's editor.
-2. Delete this entire comment block.
-3. Drag the PnR screenshot into this position; GitHub will insert its image link.
--->
+![Uploading pnr_im.jpg…]()
 
 ## Results at a glance
 
